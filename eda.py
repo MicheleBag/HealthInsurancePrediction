@@ -1,6 +1,7 @@
 ﻿import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sn
+from sklearn import preprocessing
 
 """
 TODO: 
@@ -46,8 +47,8 @@ columns_to_check = ['Age', 'Driving_License', 'Region_Code', 'Previously_Insured
                     'Gender', 'Vehicle_Damage', 'Vehicle_Age_1-2 Year',
                     'Vehicle_Age_< 1 Year', 'Vehicle_Age_> 2 Years', 'Response']
 for column in columns_to_check:
-    print(column, "count: ", dataset[column].value_counts())
-    print(column, "Normalized count: ", dataset[column].value_counts(normalize=True))
+    #print(column, "count: ", dataset[column].value_counts())
+    #print(column, "Normalized count: ", dataset[column].value_counts(normalize=True))
     plt.figure()
     dataset[column].value_counts(normalize=True).plot.pie()
 
@@ -73,12 +74,19 @@ dataset.boxplot(columns_to_boxplot)
 # Verifico HLP per la feature Annual_Premium
 plt.figure()
 dataset.boxplot('Annual_Premium')
+
 # Rimuovo l'1% dei valori più grandi
 dataset = dataset[(dataset.Annual_Premium < dataset.Annual_Premium.quantile(.99))]
 plt.figure()
 dataset.boxplot('Annual_Premium')
 
-#plt.show()
+# Features normalization
+features_to_normalize = ['Age', 'Region_Code', 'Annual_Premium', 'Policy_Sales_Channel', 'Vintage']
+scaler = preprocessing.MinMaxScaler()
+dataset[features_to_normalize] = scaler.fit_transform(dataset[features_to_normalize])
+#print(dataset.head())
 
+
+#plt.show()
 dataset.to_csv('Dataset.csv', index=False)
 
